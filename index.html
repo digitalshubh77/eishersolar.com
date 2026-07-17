@@ -1,132 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coming Soon</title>
-
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            font-family: "Segoe UI", Arial, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 450px;
-            padding: 40px 30px;
-            text-align: center;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-        }
-
-        h1 {
-            margin: 0;
-            color: #38bdf8;
-            font-size: 30px;
-            font-weight: 700;
-            word-break: break-word;
-        }
-
-        .message {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #f8fafc;
-            line-height: 1.7;
-        }
-
-        .launching {
-            color: #94a3b8;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        .loader {
-            width: 42px;
-            height: 42px;
-            margin: 28px auto;
-            border: 4px solid #334155;
-            border-top: 4px solid #38bdf8;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .footer {
-            font-size: 13px;
-            color: #64748b;
-            letter-spacing: 0.5px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 26px;
-            }
-
-            .message {
-                font-size: 17px;
-            }
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #0f172a; color: #f8fafc; }
+        .container { text-align: center; padding: 40px; background: #1e293b; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid #334155; max-width: 400px; width: 90%; }
+        h1 { color: #38bdf8; margin-bottom: 5px; font-size: 28px; text-transform: lowercase; }
+        p { color: #94a3b8; font-size: 16px; margin-top: 15px; }
+        .loader { width: 40px; height: 40px; border: 4px solid #334155; border-top: 4px solid #38bdf8; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-
 <body>
-
     <div class="container">
-
-        <!-- Domain Name Automatically Display -->
-        <h1 id="domain-name">Website</h1>
-
-        <!-- Main Message -->
-        <div class="message">
-            Website Design in Progress<br>
-            <span class="launching">Launching Soon!</span>
-        </div>
-
-        <!-- Loading Animation -->
+        <h1 id="domain-name">website</h1>
+        <p>Website Design in Progress 
+Launching Soon!</p>
         <div class="loader"></div>
-
-        <!-- Branding -->
-        <div class="footer">
-            Designed by Scale Logic Studio
-        </div>
-
     </div>
 
     <script>
-        // Automatically fetch the current domain name
-        const currentDomain = window.location.hostname.replace("www.", "");
-
-        if (currentDomain && !currentDomain.includes("vercel.app")) {
+        // ब्राउझरमधून डोमेन नाव (उदा. tagit.in) ऑटोमॅटिक उचलणे
+        const currentDomain = window.location.hostname.replace('www.', '');
+        if(currentDomain && !currentDomain.includes('vercel.app')) {
             document.title = currentDomain + " | Coming Soon";
-            document.getElementById("domain-name").innerText = currentDomain;
+            document.getElementById('domain-name').innerText = currentDomain;
         } else {
-            document.title = "Scale Logic Studio | Coming Soon";
-            document.getElementById("domain-name").innerText = "Scale Logic Studio";
+            document.title = "ScaleLogic Studio | Setup";
+            document.getElementById('domain-name').innerText = "ScaleLogic Studio";
         }
     </script>
-
 </body>
 </html>
