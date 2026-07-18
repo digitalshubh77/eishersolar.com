@@ -2,26 +2,42 @@
   "name": "eishersolar",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.25",
+    "lucide-react": "^1.25.0",
+    "motion": "^12.42.2",
+    "next": "^15.5.20",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.7"
+    "react-icons": "^5.7.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "15.5.7",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "^15.5.20",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
   }
 }
