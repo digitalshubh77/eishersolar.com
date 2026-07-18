@@ -256,6 +256,12 @@ a, button {
 .desktop-nav a:hover::after { right: 0; }
 .desktop-nav a.active { color: white; }
 .desktop-nav a.active::after { right: 0; }
+.desktop-nav a.disabled-nav {
+  cursor: default;
+  opacity: .58;
+}
+.desktop-nav a.disabled-nav:hover { color: rgba(255,255,255,.68); }
+.desktop-nav a.disabled-nav:hover::after { right: 100%; }
 
 .nav-cta {
   height: 48px;
@@ -1129,6 +1135,7 @@ footer { padding: 80px 0 24px; color: white; background: #040906; }
   .mobile-menu a:last-child { border-bottom: 0; }
   .mobile-menu a span { color: var(--lime); font-size: 9px; }
   .mobile-menu a svg { width: 17px; }
+  .mobile-menu a.disabled-nav { cursor: default; opacity: .42; }
 }
 
 @media (max-width: 1100px) {

@@ -415,7 +415,12 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
             <Link
               key={href}
               href={href}
-              className={href === "/" ? "active" : ""}
+              className={href === "/" ? "active" : "disabled-nav"}
+              aria-disabled={href !== "/"}
+              tabIndex={href === "/" ? 0 : -1}
+              onClick={(event) => {
+                if (href !== "/") event.preventDefault();
+              }}
             >
               {label}
             </Link>
@@ -449,7 +454,16 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
               <motion.a
                 key={href}
                 href={href}
-                onClick={() => setMenuOpen(false)}
+                className={href === "/" ? "active" : "disabled-nav"}
+                aria-disabled={href !== "/"}
+                tabIndex={href === "/" ? 0 : -1}
+                onClick={(event) => {
+                  if (href !== "/") {
+                    event.preventDefault();
+                    return;
+                  }
+                  setMenuOpen(false);
+                }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.08 * index }}
