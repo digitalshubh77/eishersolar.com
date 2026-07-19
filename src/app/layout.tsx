@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { DM_Sans, Lora, Manrope } from "next/font/google";
+import { DM_Sans, Lora, Manrope, Outfit } from "next/font/google";
 import "./globals.css";
+import "./calculator.css";
+import "./brand-font.css";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -18,6 +20,13 @@ const lora = Lora({
   variable: "--font-lora",
   subsets: ["latin"],
   style: ["normal", "italic"],
+  display: "swap",
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -84,7 +93,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} ${dmSans.variable} ${lora.variable}`}>
+      <body className={`${manrope.variable} ${dmSans.variable} ${lora.variable} ${outfit.variable}`}>
         {children}
       </body>
     </html>

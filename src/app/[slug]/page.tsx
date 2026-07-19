@@ -6,7 +6,7 @@ const pages: Record<string, { page: Exclude<SitePage, "home">; title: string; de
   about: {
     page: "about",
     title: "About Us",
-    description: "Discover Eisher Industries LLP, our mission and 24 years of hands-on power-sector experience.",
+    description: "About EISHER INDUSTRIES LLP—Konkan’s trusted solar partner for homes, businesses and industries.",
   },
   services: {
     page: "services",

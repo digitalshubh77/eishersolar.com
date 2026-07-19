@@ -9,7 +9,6 @@ import {
   Banknote,
   BatteryCharging,
   Building2,
-  Calculator,
   Check,
   ChevronRight,
   CircleCheck,
@@ -33,7 +32,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
+import { FaWhatsapp } from "react-icons/fa";
+import { AnimatePresence, motion, useInView, useScroll, useTransform } from "motion/react";
 import { FormEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
@@ -52,6 +52,7 @@ const navItems = [
   ["Process", "/process"],
   ["Finance", "/finance"],
   ["Why us", "/why-us"],
+  ["Calculator", "/solar-calculator"],
   ["Contact", "/contact"],
 ] as const;
 
@@ -66,12 +67,18 @@ export type SitePage =
   | "contact"
   | "calculator";
 
+const hrefToPage = (href: string): SitePage => {
+  if (href === "/") return "home";
+  if (href === "/solar-calculator") return "calculator";
+  return href.slice(1) as SitePage;
+};
+
 const pageIntros: Record<Exclude<SitePage, "home">, { index: string; title: string; accent: string; text: string }> = {
   about: {
     index: "01",
-    title: "Rooted in experience.",
-    accent: "Driven by purpose.",
-    text: "Meet the team and mission making dependable solar simpler across Konkan and western Maharashtra.",
+    title: "Solar Expertise That",
+    accent: "Stays With You.",
+    text: "Reliable, high-quality and affordable solar for homes and businesses across Konkan.",
   },
   services: {
     index: "02",
@@ -83,7 +90,7 @@ const pageIntros: Record<Exclude<SitePage, "home">, { index: string; title: stri
     index: "03",
     title: "Technology selected.",
     accent: "For lasting trust.",
-    text: "Reliable inverters, batteries and compliant solar products from brands known for dependable support.",
+    text: "Step by step—solar panels, batteries and inverters from brands chosen for dependable performance and support.",
   },
   process: {
     index: "04",
@@ -101,7 +108,7 @@ const pageIntros: Record<Exclude<SitePage, "home">, { index: string; title: stri
     index: "06",
     title: "Experience matters.",
     accent: "Support matters more.",
-    text: "Power-sector knowledge, proven installations and service that continues after your system goes live.",
+    text: "Power-sector knowledge, proven installations and support that continues after go-live.",
   },
   contact: {
     index: "07",
@@ -171,6 +178,53 @@ const inverterBrands = [
   "EASTMAN",
   "MICROTEK",
   "LUMINOUS",
+] as const;
+
+const batteryBrands = ["OKAYA", "EXIDE", "EASTMAN"] as const;
+
+const panelNote = "Panels selected to meet applicable government compliance standards (such as DCR/ALMM for subsidy-eligible residential systems). Exact certification is confirmed per project.";
+
+const proofSlides = [
+  {
+    kicker: "Experience",
+    title: "24+ years in the power sector",
+    text: "We understand electricity systems inside out—not just solar panels.",
+    value: 24,
+    suffix: "+",
+    label: "Years",
+    image: "/proof/solar-experience.jpg",
+    alt: "Solar panels installed on a rooftop under clear sky",
+  },
+  {
+    kicker: "Results",
+    title: "500+ successful installations",
+    text: "Homes and businesses powered across Raigad, Ratnagiri, Thane, Pune, Satara and Palghar.",
+    value: 500,
+    suffix: "+",
+    label: "Installs",
+    image: "/proof/solar-installs.jpg",
+    alt: "Technician installing solar panels on a residential roof",
+  },
+  {
+    kicker: "Journey",
+    title: "End-to-end solar support",
+    text: "From free site visit and subsidy paperwork to installation and net metering.",
+    value: 5,
+    suffix: "",
+    label: "Clear steps",
+    image: "/proof/solar-journey.jpg",
+    alt: "Completed solar rooftop system with blue panels",
+  },
+  {
+    kicker: "Guidance",
+    title: "Subsidy & finance handled",
+    text: "PM Surya Ghar guidance with public-sector bank, Bajaj Finance and Ecofy options.",
+    value: 3,
+    suffix: "",
+    label: "Finance partners",
+    image: "/proof/solar-finance.jpg",
+    alt: "Large solar farm generating clean renewable energy",
+  },
 ] as const;
 
 const certificates = [
@@ -274,42 +328,172 @@ function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?:
   );
 }
 
+function CredentialsSection({
+  onSelect,
+  compact = false,
+}: {
+  onSelect: (certificate: (typeof certificates)[number]) => void;
+  compact?: boolean;
+}) {
+  return (
+    <div className={`credentials ${compact ? "is-compact" : ""}`}>
+      <Reveal className="credentials-heading">
+        <div>
+          <Eyebrow>Credentials & recognition</Eyebrow>
+          <h2>Verified standards.<br /><em>Visible trust.</em></h2>
+        </div>
+        <p>
+          Our credentials reflect a commitment to recognised quality
+          systems, transparent business practices and genuine brand partnerships.
+        </p>
+      </Reveal>
+      <div className="certificate-grid">
+        {certificates.map((certificate, index) => (
+          <motion.button
+            type="button"
+            className={`certificate-card ${certificate.tone}`}
+            key={certificate.title}
+            onClick={() => onSelect(certificate)}
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.7, delay: index * 0.1 }}
+            aria-label={`View ${certificate.title} certificate`}
+          >
+            <div className="certificate-image">
+              <Image
+                src={certificate.image}
+                alt={`${certificate.title} issued to Eisher Industries LLP`}
+                width={certificate.width}
+                height={certificate.height}
+                sizes="(max-width: 820px) 92vw, 44vw"
+              />
+              <span><Sparkles /> Verified credential</span>
+            </div>
+            <div className="certificate-info">
+              <span>0{index + 1}</span>
+              <div>
+                <small>{certificate.issuer}</small>
+                <h3>{certificate.title}</h3>
+                <p>{certificate.validity}</p>
+              </div>
+              <i><ArrowRight /></i>
+            </div>
+          </motion.button>
+        ))}
+      </div>
+      <p className="certificate-note"><ShieldCheck /> Click any certificate to view the full document.</p>
+    </div>
+  );
+}
+
+function BrandName({ compact = false, className = "" }: { compact?: boolean; className?: string }) {
+  return (
+    <span className={`brand-name ${compact ? "is-compact" : ""} ${className}`.trim()}>
+      <span className="brand-eisher">EISHER</span>
+      <span className="brand-industries">INDUSTRIES LLP</span>
+    </span>
+  );
+}
+
 function CountUp({
   to,
   suffix = "",
   duration = 1500,
+  className = "",
 }: {
   to: number;
   suffix?: string;
   duration?: number;
+  className?: string;
 }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   const [value, setValue] = useState(0);
 
   useEffect(() => {
+    if (!inView) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setValue(to);
       return;
     }
 
     let frame = 0;
-    const delay = window.setTimeout(() => {
-      const startedAt = performance.now();
-      const animate = (now: number) => {
-        const progress = Math.min((now - startedAt) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setValue(Math.round(to * eased));
-        if (progress < 1) frame = requestAnimationFrame(animate);
-      };
-      frame = requestAnimationFrame(animate);
-    }, 650);
-
-    return () => {
-      window.clearTimeout(delay);
-      cancelAnimationFrame(frame);
+    const startedAt = performance.now();
+    const animate = (now: number) => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(to * eased));
+      if (progress < 1) frame = requestAnimationFrame(animate);
     };
-  }, [duration, to]);
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [duration, inView, to]);
 
-  return <>{value}{suffix}</>;
+  return <span ref={ref} className={className}>{value}{suffix}</span>;
+}
+
+function ProofSlideshow() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % proofSlides.length);
+    }, 4200);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const slide = proofSlides[active];
+
+  return (
+    <div className="proof-stage">
+      <div className="proof-stage-depth" aria-hidden="true" />
+      <AnimatePresence mode="wait">
+        <motion.article
+          key={slide.title}
+          className="proof-slide"
+          initial={{ opacity: 0, rotateY: 28, z: -120, scale: 0.92 }}
+          animate={{ opacity: 1, rotateY: 0, z: 0, scale: 1 }}
+          exit={{ opacity: 0, rotateY: -24, z: -80, scale: 0.94 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="proof-slide-media">
+            <Image
+              src={slide.image}
+              alt={slide.alt}
+              fill
+              sizes="(max-width: 820px) 92vw, 42vw"
+              className="proof-slide-photo"
+              priority={active === 0}
+            />
+            <div className="proof-slide-media-shade" aria-hidden="true" />
+          </div>
+          <div className="proof-slide-body">
+            <small>{slide.kicker}</small>
+            <div className="proof-slide-value">
+              <CountUp to={slide.value} suffix={slide.suffix} duration={1200} />
+              <span>{slide.label}</span>
+            </div>
+            <h3>{slide.title}</h3>
+            <p>{slide.text}</p>
+          </div>
+        </motion.article>
+      </AnimatePresence>
+      <div className="proof-slide-dots" role="tablist" aria-label="Why Eisher highlights">
+        {proofSlides.map((item, index) => (
+          <button
+            key={item.title}
+            type="button"
+            role="tab"
+            aria-selected={active === index}
+            className={active === index ? "is-active" : ""}
+            onClick={() => setActive(index)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function EisherSite({ page = "home" }: { page?: SitePage }) {
@@ -377,36 +561,24 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
         aria-hidden="true"
       />
       <div className="floating-actions" aria-label="Quick contact">
-        <div className="floating-status"><i className="pulse-dot" /> We’re here to help</div>
-        <div className="floating-buttons">
-          <Link
-            className="floating-calculator"
-            href="/solar-calculator"
-            aria-label="Open solar calculator"
-          >
-            <i><Calculator /></i>
-            <span><small>Estimate savings</small>Calculator</span>
-          </Link>
-          <a
-            className="floating-call"
-            href="tel:+919422095082"
-            aria-label="Call Eisher Industries"
-          >
-            <i><Phone /></i>
-            <span><small>Speak with us</small>Call now</span>
-          </a>
-          <a
-            className="floating-whatsapp"
-            href="https://wa.me/919422095082?text=Hello%20Eisher%20Industries%2C%20I%20would%20like%20a%20free%20solar%20consultation."
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Chat with Eisher Industries on WhatsApp"
-          >
-            <i><MessageCircle /></i>
-            <span><small>Fastest reply</small>WhatsApp</span>
-            <ArrowRight />
-          </a>
-        </div>
+        <a
+          className="floating-call"
+          href="tel:+919422095082"
+          aria-label="Call Eisher Industries"
+          title="Call now"
+        >
+          <Phone />
+        </a>
+        <a
+          className="floating-whatsapp"
+          href="https://wa.me/919422095082?text=Hello%20Eisher%20Industries%2C%20I%20would%20like%20a%20free%20solar%20consultation."
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat with Eisher Industries on WhatsApp"
+          title="WhatsApp"
+        >
+          <FaWhatsapp />
+        </a>
       </div>
 
       <header className={`navbar ${scrolled ? "scrolled" : ""}`}>
@@ -422,26 +594,24 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
             <i />
           </span>
           <span>
-            <b>EISHER</b>
-            <small>INDUSTRIES LLP</small>
+            <BrandName compact />
+            <small className="brand-tagline">NATURE FRIEND</small>
           </span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navItems.map(([label, href]) => (
-            <Link
-              key={href}
-              href={href}
-              className={href === "/" ? "active" : "disabled-nav"}
-              aria-disabled={href !== "/"}
-              tabIndex={href === "/" ? 0 : -1}
-              onClick={(event) => {
-                if (href !== "/") event.preventDefault();
-              }}
-            >
-              {label}
-            </Link>
-          ))}
+          {navItems.map(([label, href]) => {
+            const isActive = page === hrefToPage(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={isActive ? "active" : ""}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         <a className="nav-cta" href="https://wa.me/919422095082" target="_blank" rel="noreferrer">
@@ -467,27 +637,22 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
             exit={{ opacity: 0, clipPath: "inset(0 0 100% 0 round 24px)" }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            {navItems.map(([label, href], index) => (
-              <motion.a
-                key={href}
-                href={href}
-                className={href === "/" ? "active" : "disabled-nav"}
-                aria-disabled={href !== "/"}
-                tabIndex={href === "/" ? 0 : -1}
-                onClick={(event) => {
-                  if (href !== "/") {
-                    event.preventDefault();
-                    return;
-                  }
-                  setMenuOpen(false);
-                }}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.08 * index }}
-              >
-                <span>0{index + 1}</span>{label}<ArrowRight />
-              </motion.a>
-            ))}
+            {navItems.map(([label, href], index) => {
+              const isActive = page === hrefToPage(href);
+              return (
+                <motion.a
+                  key={href}
+                  href={href}
+                  className={isActive ? "active" : ""}
+                  onClick={() => setMenuOpen(false)}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 * index }}
+                >
+                  <span>0{index + 1}</span>{label}<ArrowRight />
+                </motion.a>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
@@ -535,7 +700,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
       </AnimatePresence>
 
       <main id="main" ref={mainRef}>
-        {page !== "home" && (
+        {page !== "home" && page !== "calculator" && (
           <section className="page-hero" id="top">
             <div className="hero-grid" aria-hidden="true" />
             <div className="aurora aurora-one" aria-hidden="true" />
@@ -544,8 +709,9 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
+                className="page-hero-brand"
               >
-                EISHER / {pageIntros[page].index}
+                <BrandName className="inline-brand" /> / {pageIntros[page].index}
               </motion.span>
               <h1>
                 <motion.i initial={{ y: "110%" }} animate={{ y: 0 }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}>
@@ -600,7 +766,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
               transition={{ delay: 0.45, duration: 0.8 }}
             >
               Trusted solar installation across Konkan and western Maharashtra,
-              backed by 24 years of hands-on power-sector experience.
+              backed by <CountUp to={24} /> years of hands-on power-sector experience.
             </motion.p>
             <motion.div
               className="hero-actions"
@@ -623,11 +789,11 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
             <div className="orbit-ring" aria-hidden="true" />
             <motion.div className="float-card install-card" animate={{ y: [0, -10, 0] }} transition={{ duration: 4.8, repeat: Infinity }}>
               <span><CircleCheck size={17} /></span>
-              <div><small>Installed & counting</small><strong>500+</strong></div>
+              <div><small>Installed & counting</small><strong><CountUp to={500} suffix="+" duration={1800} /></strong></div>
             </motion.div>
             <motion.div className="float-card region-card" animate={{ y: [0, 8, 0] }} transition={{ duration: 5.5, repeat: Infinity }}>
               <MapPin size={18} />
-              <div><small>Serving</small><strong>6 regions</strong></div>
+              <div><small>Serving</small><strong><CountUp to={6} /> regions</strong></div>
             </motion.div>
             <div className="nature-seal">
               <Leaf />
@@ -657,57 +823,67 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
           </div>
         </section>
 
-        <SolarCalculator />
+        <SolarCalculator compact />
 
         <section className="home-proof section-pad">
           <div className="section-shell">
             <Reveal className="proof-intro">
-              <Eyebrow>Why Eisher Industries</Eyebrow>
-              <h2>Solar expertise that<br /><em>stays with you.</em></h2>
-              <p>
-                One accountable team—from understanding your electricity bill
-                to switching on your net meter.
-              </p>
+              <Eyebrow>Why <BrandName className="inline-brand" />?</Eyebrow>
+              <h2>Solar Expertise That<br /><em>Stays With You.</em></h2>
+              <div className="proof-intro-copy">
+                <p>
+                  For years, <BrandName className="inline-brand" /> has been helping homes and businesses
+                  across Konkan save more with reliable solar solutions. From expert installation to
+                  dependable after-sales support, we are committed to delivering quality, performance,
+                  and long-term value.
+                </p>
+                <Link href="/about" className="proof-discover">
+                  Discover what makes us one of Konkan&apos;s trusted solar partners <ArrowRight />
+                </Link>
+              </div>
             </Reveal>
-            <div className="proof-bento">
-              <Reveal className="proof-main">
-                <div className="proof-main-top">
-                  <span>Power sector experience</span>
-                  <ShieldCheck />
-                </div>
-                <strong>24<sup>years</sup></strong>
-                <h3>Knowledge beyond panels.</h3>
-                <p>Every installation is grounded in real electrical-system expertise.</p>
-                <div className="proof-rings" aria-hidden="true"><i /><i /><i /></div>
-              </Reveal>
-              <Reveal className="proof-installations" delay={0.08}>
-                <span><Zap /></span>
-                <strong>500+</strong>
-                <h3>Successful installations</h3>
-                <p>Homes and businesses powered across six regions.</p>
-                <Link href="/why-us">Why choose us <ArrowRight /></Link>
-              </Reveal>
-              <Reveal className="proof-journey" delay={0.14}>
-                <div>
-                  <small>END-TO-END</small>
-                  <h3>One seamless solar journey.</h3>
-                </div>
-                <div className="journey-track">
-                  {["Visit", "Design", "Install", "Meter"].map((item, index) => (
-                    <span key={item}><i>{index + 1}</i>{item}</span>
-                  ))}
-                </div>
-                <Link href="/process">See our process <ArrowRight /></Link>
-              </Reveal>
-              <Reveal className="proof-support" delay={0.2}>
-                <HandCoins />
-                <div>
-                  <small>SUBSIDY + FINANCE</small>
-                  <h3>Guidance, handled.</h3>
-                  <p>PM Surya Ghar support and flexible financing pathways.</p>
-                </div>
-                <Link href="/finance" aria-label="Explore subsidy and finance"><ArrowRight /></Link>
-              </Reveal>
+            <div className="proof-highlight-grid">
+              <ProofSlideshow />
+              <div className="proof-bento proof-bento-side">
+                <Reveal className="proof-main">
+                  <div className="proof-main-top">
+                    <span>Power sector experience</span>
+                    <ShieldCheck />
+                  </div>
+                  <strong><CountUp to={24} /><sup>yrs+</sup></strong>
+                  <h3>Knowledge beyond panels.</h3>
+                  <p>Every <BrandName className="inline-brand" /> installation is grounded in real electrical-system expertise.</p>
+                  <div className="proof-rings" aria-hidden="true"><i /><i /><i /></div>
+                </Reveal>
+                <Reveal className="proof-installations" delay={0.08}>
+                  <span><Zap /></span>
+                  <strong><CountUp to={500} suffix="+" /></strong>
+                  <h3>Successful installations</h3>
+                  <p>Homes and businesses powered across six regions.</p>
+                  <Link href="/why-us">Why <BrandName className="inline-brand" /> <ArrowRight /></Link>
+                </Reveal>
+                <Reveal className="proof-journey" delay={0.14}>
+                  <div>
+                    <small>END-TO-END</small>
+                    <h3>One seamless solar journey.</h3>
+                  </div>
+                  <div className="journey-track">
+                    {["Visit", "Design", "Install", "Meter"].map((item, index) => (
+                      <span key={item}><i>{index + 1}</i>{item}</span>
+                    ))}
+                  </div>
+                  <Link href="/process">See our process <ArrowRight /></Link>
+                </Reveal>
+                <Reveal className="proof-support" delay={0.2}>
+                  <HandCoins />
+                  <div>
+                    <small>SUBSIDY + FINANCE</small>
+                    <h3>Guidance, handled.</h3>
+                    <p>PM Surya Ghar support and flexible financing pathways.</p>
+                  </div>
+                  <Link href="/finance" aria-label="Explore subsidy and finance"><ArrowRight /></Link>
+                </Reveal>
+              </div>
             </div>
             <Reveal className="service-area-line">
               <span><MapPin /> Proudly serving</span>
@@ -716,23 +892,35 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
           </div>
         </section>
 
+        <section className="home-credentials section-pad" aria-labelledby="home-credentials-title">
+          <div className="section-shell">
+            <h2 id="home-credentials-title" className="sr-only">Credentials and certificates</h2>
+            <CredentialsSection onSelect={setSelectedCertificate} compact />
+          </div>
+        </section>
+
         <section className="home-pages section-pad">
           <div className="section-shell">
             <Reveal className="home-pages-heading">
               <Eyebrow>Everything you need to go solar</Eyebrow>
-              <h2>Explore Eisher.<br /><em>Choose your next step.</em></h2>
+              <h2>Explore <BrandName className="inline-brand" />.<br /><em>Choose your next step.</em></h2>
             </Reveal>
             <div className="home-page-grid">
-              {navItems.filter(([, href]) => href !== "/").map(([label, href], index) => (
-                <Link href={href} key={href} className={index === 0 ? "featured" : ""}>
-                  <span>0{index + 1}</span>
-                  <div>
-                    <h3>{label}</h3>
-                    <p>{pageIntros[href.slice(1) as Exclude<SitePage, "home">].text}</p>
-                  </div>
-                  <ArrowRight />
-                </Link>
-              ))}
+              {navItems
+                .filter(([, href]) => href !== "/")
+                .map(([label, href], index) => {
+                  const introKey = hrefToPage(href) as Exclude<SitePage, "home">;
+                  return (
+                    <Link href={href} key={href} className={index === 0 ? "featured" : ""}>
+                      <span>0{index + 1}</span>
+                      <div>
+                        <h3>{label}</h3>
+                        <p>{pageIntros[introKey].text}</p>
+                      </div>
+                      <ArrowRight />
+                    </Link>
+                  );
+                })}
             </div>
             <Reveal className="home-closing">
               <div><Leaf /><span>Ready to cut your electricity bill and go green?</span></div>
@@ -746,83 +934,102 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
         <section className="about section-pad" id="about">
           <div className="section-shell">
             <Reveal className="about-heading">
-              <Eyebrow>Our story</Eyebrow>
-              <h2>A young company.<br /><em>Deep expertise.</em></h2>
+              <Eyebrow>About <BrandName className="inline-brand" /></Eyebrow>
+              <h2>Solar Expertise That<br /><em>Stays With You.</em></h2>
             </Reveal>
+
             <div className="about-layout">
               <Reveal className="about-statement">
                 <span className="quote-mark">“</span>
-                <p>Every installation is backed by know-how, <strong>not guesswork.</strong></p>
+                <p>
+                  At <BrandName className="inline-brand" />, solar is more than bill savings—
+                  <strong> it is a long-term investment in your future.</strong>
+                </p>
                 <div className="experience-orbit">
-                  <span>24</span>
-                  <small>years of power<br />sector experience</small>
+                  <span><CountUp to={70} suffix="%" /></span>
+                  <small>installs across<br />Raigad & Ratnagiri*</small>
                 </div>
               </Reveal>
+
               <Reveal className="about-copy" delay={0.12}>
                 <p>
-                  Founded in 2024 in Poladpur, Raigad, Eisher Industries LLP
-                  brings reliable and honest solar solutions to homes, shops
-                  and industries across Konkan and western Maharashtra.
+                  At <BrandName className="inline-brand" />, we believe solar is more than just saving on
+                  electricity bills—it is a long-term investment in your future. Our mission is to provide
+                  reliable, high-quality, and affordable solar solutions that deliver maximum performance
+                  for years to come.
                 </p>
-                <div className="mission-list">
-                  {[
-                    ["01", "Protect the environment through clean energy"],
-                    ["02", "Reduce electricity bills for families and businesses"],
-                    ["03", "Make solar simple, transparent and dependable"],
-                  ].map(([number, item]) => (
-                    <div key={number}><span>{number}</span><p>{item}</p><Check /></div>
-                  ))}
-                </div>
+                <p>
+                  We proudly serve homes, businesses, hotels, and industries across the Konkan region with
+                  end-to-end solar services. From expert consultation and system design to installation,
+                  government subsidy assistance, and after-sales support, we take care of everything.
+                </p>
+                <p>
+                  What makes us different is our deep understanding of the local environment. Konkan&apos;s
+                  heavy rainfall, humidity, and coastal conditions require strong and dependable solar systems.
+                  That&apos;s why we use premium-quality materials and installation practices designed for
+                  long-lasting performance.
+                </p>
+                <p>
+                  Today, <strong className="about-stat-accent">60% to 70%</strong> of the solar installations
+                  across Raigad and Ratnagiri are completed by our team, making us one of the trusted names
+                  in the region. Our experience across hundreds of successful projects allows us to recommend
+                  the right solar solution for every customer&apos;s needs.
+                </p>
+                <p className="about-footnote">
+                  *Based on regional project volume shared by <BrandName className="inline-brand" />.
+                </p>
               </Reveal>
             </div>
-            <div className="credentials">
-              <Reveal className="credentials-heading">
-                <div>
-                  <Eyebrow>Credentials & recognition</Eyebrow>
-                  <h2>Verified standards.<br /><em>Visible trust.</em></h2>
-                </div>
-                <p>
-                  Our credentials reflect a commitment to recognised quality
-                  systems, transparent business practices and genuine brand partnerships.
-                </p>
+
+            <div className="about-why">
+              <Reveal>
+                <Eyebrow>Why Choose <BrandName className="inline-brand" />?</Eyebrow>
+                <h3>Trusted solar partnership,<br /><em>built for Konkan.</em></h3>
               </Reveal>
-              <div className="certificate-grid">
-                {certificates.map((certificate, index) => (
-                  <motion.button
-                    type="button"
-                    className={`certificate-card ${certificate.tone}`}
-                    key={certificate.title}
-                    onClick={() => setSelectedCertificate(certificate)}
-                    initial={{ opacity: 0, y: 35 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-60px" }}
-                    transition={{ duration: 0.7, delay: index * 0.1 }}
-                    aria-label={`View ${certificate.title} certificate`}
-                  >
-                    <div className="certificate-image">
-                      <Image
-                        src={certificate.image}
-                        alt={`${certificate.title} issued to Eisher Industries LLP`}
-                        width={certificate.width}
-                        height={certificate.height}
-                        sizes="(max-width: 820px) 92vw, 44vw"
-                      />
-                      <span><Sparkles /> Verified credential</span>
-                    </div>
-                    <div className="certificate-info">
-                      <span>0{index + 1}</span>
-                      <div>
-                        <small>{certificate.issuer}</small>
-                        <h3>{certificate.title}</h3>
-                        <p>{certificate.validity}</p>
-                      </div>
-                      <i><ArrowRight /></i>
-                    </div>
-                  </motion.button>
+              <div className="mission-list">
+                {[
+                  ["01", "Trusted by hundreds of satisfied customers"],
+                  ["02", "One of Konkan’s leading solar solution providers"],
+                  ["03", "Expert solar installations designed for local weather conditions"],
+                  ["04", "Complete support for government subsidy and approval processes"],
+                  ["05", "Fast, reliable, and responsive after-sales service"],
+                  ["06", "Premium-quality products with professional installation standards"],
+                  ["07", "Dedicated technical support from consultation to commissioning"],
+                ].map(([number, item]) => (
+                  <div key={number}><span>{number}</span><p>{item}</p><Check /></div>
                 ))}
               </div>
-              <p className="certificate-note"><ShieldCheck /> Click any certificate to view the full document.</p>
             </div>
+
+            <div className="about-pillars">
+              <Reveal className="about-pillar">
+                <small>Our Vision</small>
+                <h3>Clean energy for every home and business</h3>
+                <p>
+                  To make clean and sustainable energy accessible to every home and business while creating
+                  a greener and brighter future for generations to come.
+                </p>
+              </Reveal>
+              <Reveal className="about-pillar" delay={0.1}>
+                <small>Our Commitment</small>
+                <h3>Support that continues after installation</h3>
+                <p>
+                  At <BrandName className="inline-brand" />, we don&apos;t just install solar systems—we build
+                  long-term relationships based on trust, quality, and dependable service. Our commitment
+                  continues long after the installation is complete because your savings, satisfaction, and
+                  peace of mind matter to us.
+                </p>
+              </Reveal>
+            </div>
+
+            <Reveal className="about-closing-line">
+              <Leaf />
+              <p>
+                <BrandName className="inline-brand" /> – Solar Expertise That Stays With You.
+              </p>
+            </Reveal>
+
+            <CredentialsSection onSelect={setSelectedCertificate} />
           </div>
         </section>
         )}
@@ -870,36 +1077,72 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
         {page === "products" && (
         <section className="brands section-pad" id="products">
           <div className="brand-glow" aria-hidden="true" />
-          <div className="section-shell brands-layout">
-            <Reveal className="brands-copy">
+          <div className="section-shell">
+            <Reveal className="products-heading">
               <Eyebrow dark>Products & brands</Eyebrow>
-              <h2>Trusted technology.<br /><em>Chosen to last.</em></h2>
+              <h2>Trusted technology.<br /><em>Step by step.</em></h2>
               <p>
-                Every system is selected for dependable performance,
-                government compliance where applicable, and strong after-sales support.
+                <BrandName className="inline-brand" /> selects every product for dependable performance,
+                compliance where applicable, and strong after-sales support.
               </p>
-              <div className="product-pills">
-                <span><Gauge /> Premium inverters</span>
-                <span><BatteryCharging /> Reliable batteries</span>
-                <span><Sun /> Compliant solar panels</span>
-              </div>
             </Reveal>
-            <Reveal className="brands-constellation" delay={0.12}>
-              <div className="brand-core"><Zap /><span>Power you<br />can trust</span></div>
-              {inverterBrands.map((brand, index) => (
-                <motion.span
-                  key={brand}
-                  className={`brand-chip chip-${index + 1}`}
-                  animate={{ y: [0, index % 2 ? 7 : -7, 0] }}
-                  transition={{ duration: 4 + index * 0.35, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  {brand}
-                </motion.span>
-              ))}
-            </Reveal>
-          </div>
-          <div className="battery-strip section-shell">
-            <span>Battery partners</span><strong>OKAYA</strong><strong>EXIDE</strong><strong>EASTMAN</strong>
+
+            <div className="product-steps">
+              <motion.article
+                className="product-step"
+                initial={{ opacity: 0, y: 36 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+              >
+                <div className="product-step-index"><span>01</span><Sun /></div>
+                <div className="product-step-copy">
+                  <small>Step 01 · Solar business</small>
+                  <h3>Solar panels</h3>
+                  <p>{panelNote}</p>
+                  <div className="product-brand-row">
+                    <span>ALMM / DCR ready</span>
+                    <span>Subsidy-eligible options</span>
+                    <span>Project-matched modules</span>
+                  </div>
+                </div>
+              </motion.article>
+
+              <motion.article
+                className="product-step"
+                initial={{ opacity: 0, y: 36 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.08 }}
+              >
+                <div className="product-step-index"><span>02</span><BatteryCharging /></div>
+                <div className="product-step-copy">
+                  <small>Step 02 · Backup power</small>
+                  <h3>Batteries</h3>
+                  <p>Trusted battery brands for systems that need reliable backup power.</p>
+                  <div className="product-brand-row">
+                    {batteryBrands.map((brand) => <span key={brand}>{brand}</span>)}
+                  </div>
+                </div>
+              </motion.article>
+
+              <motion.article
+                className="product-step"
+                initial={{ opacity: 0, y: 36 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: 0.16 }}
+              >
+                <div className="product-step-index"><span>03</span><Gauge /></div>
+                <div className="product-step-copy">
+                  <small>Step 03 · System heart</small>
+                  <h3>Inverters</h3>
+                  <p>Inverter brands chosen for reliability, efficiency and after-sales support.</p>
+                  <div className="product-brand-row">
+                    {inverterBrands.map((brand) => <span key={brand}>{brand}</span>)}
+                  </div>
+                </div>
+              </motion.article>
+            </div>
           </div>
         </section>
         )}
@@ -992,20 +1235,20 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
         <section className="trust section-pad" id="trust">
           <div className="section-shell">
             <Reveal className="trust-title">
-              <Eyebrow>Why Eisher</Eyebrow>
+              <Eyebrow>Why <BrandName className="inline-brand" /></Eyebrow>
               <h2>Trust, built into<br /><em>every connection.</em></h2>
             </Reveal>
             <div className="trust-grid">
               <Reveal className="trust-hero-card">
                 <span className="trust-icon"><ShieldCheck /></span>
-                <div className="big-number">24<sup>yrs</sup></div>
+                <div className="big-number"><CountUp to={24} /><sup>yrs+</sup></div>
                 <h3>Experience you can rely on</h3>
-                <p>We understand electricity systems inside out—not just solar panels.</p>
+                <p><BrandName className="inline-brand" /> understands electricity systems inside out—not just solar panels.</p>
                 <div className="signal-lines" aria-hidden="true"><i /><i /><i /><i /></div>
               </Reveal>
               <Reveal className="trust-card installs" delay={0.08}>
                 <span><Zap /></span>
-                <strong>500+</strong>
+                <strong><CountUp to={500} suffix="+" /></strong>
                 <h3>Proven installations</h3>
                 <p>Across Raigad, Ratnagiri, Thane, Pune, Satara and Palghar.</p>
               </Reveal>
@@ -1020,7 +1263,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
               <Reveal className="trust-quote" delay={0.24}>
                 <Quote />
                 <p>Reliable. Honest.<br />Nature-friendly.</p>
-                <small>That’s the Eisher promise.</small>
+                <small>That’s the <BrandName className="inline-brand" /> promise.</small>
               </Reveal>
             </div>
           </div>
@@ -1072,7 +1315,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
           <div className="footer-top">
             <Link href="/" className="footer-brand">
               <Image src="/eisher-industries-logo.png" alt="Eisher Industries LLP" width={86} height={66} />
-              <div><strong>EISHER INDUSTRIES LLP</strong><span>NATURE FRIEND</span></div>
+              <div><strong><BrandName /></strong><span>NATURE FRIEND</span></div>
             </Link>
             <div className="footer-areas">
               <small>Serving across</small>
@@ -1101,7 +1344,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
             </div>
           </div>
           <div className="footer-bottom">
-            <span>© 2026 Eisher Industries LLP. All rights reserved.</span>
+            <span>© 2026 <BrandName className="inline-brand" />. All rights reserved.</span>
             <p>PM Surya Ghar subsidy is subject to prevailing government rules. Product warranties follow manufacturer or company policy. Finance is subject to partner approval and conditions.</p>
             <a href="#top" aria-label="Back to top">Back to top ↑</a>
           </div>
