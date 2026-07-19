@@ -9,6 +9,7 @@ import {
   Banknote,
   BatteryCharging,
   Building2,
+  Calculator,
   Check,
   ChevronRight,
   CircleCheck,
@@ -378,6 +379,14 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
       <div className="floating-actions" aria-label="Quick contact">
         <div className="floating-status"><i className="pulse-dot" /> We’re here to help</div>
         <div className="floating-buttons">
+          <Link
+            className="floating-calculator"
+            href="/solar-calculator"
+            aria-label="Open solar calculator"
+          >
+            <i><Calculator /></i>
+            <span><small>Estimate savings</small>Calculator</span>
+          </Link>
           <a
             className="floating-call"
             href="tel:+919422095082"
@@ -627,11 +636,11 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
           </motion.div>
 
           <div className="hero-footer">
-            <div>
-              <strong><CountUp to={24} /></strong>
+            <div className="experience-stat">
+              <strong><CountUp to={24} suffix="+" /></strong>
               <span>years in the<br />power sector</span>
             </div>
-            <div>
+            <div className="installation-stat">
               <strong><CountUp to={500} suffix="+" duration={1800} /></strong>
               <span>successful<br />installations</span>
             </div>

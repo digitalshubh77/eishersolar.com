@@ -168,6 +168,9 @@ a, button {
 .floating-actions a > span { display: flex; flex-direction: column; line-height: 1.15; }
 .floating-actions a small { margin-bottom: 4px; font-size: 7px; font-weight: 600; letter-spacing: .06em; opacity: .5; }
 .floating-actions svg { width: 17px; }
+.floating-calculator { color: white; background: rgba(84,168,255,.1); }
+.floating-calculator:hover { background: rgba(84,168,255,.17); }
+.floating-calculator > i { color: #9bcfff; background: rgba(84,168,255,.14); }
 .floating-call { color: white; background: rgba(255,255,255,.055); }
 .floating-call:hover { background: rgba(255,255,255,.1); }
 .floating-call > i { color: var(--lime); background: rgba(185,255,79,.1); }
@@ -496,12 +499,42 @@ h1 em, h2 em {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0;
+  gap: 10px;
 }
 .hero-footer > span { margin-right: auto; display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.35); font-size: 10px; text-transform: uppercase; letter-spacing: .15em; }
-.hero-footer > div { min-width: 190px; padding: 0 28px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-.hero-footer > div + div { border-left: 1px solid rgba(255,255,255,.13); }
-.hero-footer strong { font: 500 34px/1 var(--font-dm-sans); letter-spacing: -.05em; }
+.hero-footer > div {
+  position: relative;
+  min-width: 235px;
+  min-height: 82px;
+  padding: 0 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 19px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter: blur(14px);
+}
+.hero-footer > div::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+}
+.hero-footer .experience-stat {
+  background: linear-gradient(135deg, rgba(185,255,79,.14), rgba(255,255,255,.045));
+  border-color: rgba(185,255,79,.23);
+  box-shadow: 0 18px 50px rgba(95,190,58,.1), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hero-footer .experience-stat::after { background: linear-gradient(90deg, transparent, var(--lime), transparent); }
+.hero-footer strong { font: 520 39px/1 var(--font-dm-sans); letter-spacing: -.06em; }
+.hero-footer .experience-stat strong { color: var(--lime); text-shadow: 0 0 24px rgba(185,255,79,.23); }
 .hero-footer div span { color: rgba(255,255,255,.42); font-size: 9px; line-height: 1.45; text-transform: uppercase; letter-spacing: .08em; }
 
 .ticker {
@@ -1451,8 +1484,8 @@ footer { padding: 80px 0 24px; color: white; background: #040906; }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .magnetic-button { min-height: 54px; justify-content: space-between; }
   .hero-visual { width: 370px; height: 370px; top: 445px; right: -140px; pointer-events: none; }
-  .hero-footer { margin-top: 130px; justify-content: center; gap: 0; }
-  .hero-footer > div { min-width: 0; flex: 1; padding: 0 14px; }
+  .hero-footer { margin-top: 130px; justify-content: center; gap: 6px; }
+  .hero-footer > div { min-width: 0; min-height: 74px; flex: 1; padding: 0 10px; gap: 8px; border-radius: 15px; }
   .hero-footer strong { font-size: 27px; }
   .section-pad { padding: 82px 0; }
   .calculator-heading { margin-bottom: 42px; }
@@ -1538,7 +1571,7 @@ footer { padding: 80px 0 24px; color: white; background: #040906; }
   .hero { padding-inline: 14px; }
   .hero h1 { font-size: 43px; }
   .hero-copy > p { font-size: 12px; }
-  .hero-footer { gap: 0; }
+  .hero-footer { gap: 5px; }
   .hero-footer > div { padding-inline: 8px; }
   .hero-footer div span { font-size: 8px; }
   .page-hero h1 { font-size: 44px; }

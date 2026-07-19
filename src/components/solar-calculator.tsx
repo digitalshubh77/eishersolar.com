@@ -38,7 +38,7 @@ export default function SolarCalculator() {
     const safeSunHours = Math.max(sunHours, 1);
     const monthlyUnits = safeBill / safeTariff;
     const rawCapacity = monthlyUnits / (30 * safeSunHours * PERFORMANCE_RATIO);
-    const capacity = Math.max(Math.ceil(rawCapacity * 10) / 10, 0.5);
+    const capacity = Math.min(Math.max(Math.ceil(rawCapacity), 3), 10);
     const annualGeneration = capacity * safeSunHours * 365 * PERFORMANCE_RATIO;
     const annualConsumption = monthlyUnits * 12;
     const usableUnits = Math.min(annualGeneration, annualConsumption);
@@ -57,7 +57,7 @@ export default function SolarCalculator() {
   }, [monthlyBill, tariff, sunHours]);
 
   const whatsappMessage = encodeURIComponent(
-    `Hello Eisher Industries, I used your solar calculator.\nMonthly bill: ${formatCurrency(monthlyBill)}\nSuggested capacity: ${estimate.capacity.toFixed(1)} kW\nPlease help me with a free site visit and accurate quotation.`,
+    `Hello Eisher Industries, I used your solar calculator.\nMonthly bill: ${formatCurrency(monthlyBill)}\nSuggested capacity: ${estimate.capacity.toFixed(0)} kW\nPlease help me with a free site visit and accurate quotation.`,
   );
 
   return (
@@ -148,12 +148,12 @@ export default function SolarCalculator() {
           >
             <div className="result-topline">
               <span><span className="pulse-dot" /> Your indicative solar plan</span>
-              <small>LIVE ESTIMATE</small>
+              <small>3–10 kW RANGE</small>
             </div>
 
             <div className="capacity-result">
               <small>Suggested system capacity</small>
-              <strong>{estimate.capacity.toFixed(1)}<span>kW</span></strong>
+              <strong>{estimate.capacity.toFixed(0)}<span>kW</span></strong>
               <div className="offset-meter">
                 <i style={{ width: `${estimate.billOffset}%` }} />
               </div>
