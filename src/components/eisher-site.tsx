@@ -36,6 +36,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
 import { FormEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
+import SolarCalculator from "./solar-calculator";
 
 const SolarOrbit = dynamic(() => import("./solar-orbit"), {
   ssr: false,
@@ -61,7 +62,8 @@ export type SitePage =
   | "process"
   | "finance"
   | "why-us"
-  | "contact";
+  | "contact"
+  | "calculator";
 
 const pageIntros: Record<Exclude<SitePage, "home">, { index: string; title: string; accent: string; text: string }> = {
   about: {
@@ -105,6 +107,12 @@ const pageIntros: Record<Exclude<SitePage, "home">, { index: string; title: stri
     title: "Your solar journey.",
     accent: "Starts right here.",
     text: "Tell us about your roof and electricity bill. We’ll help you take the next clear step.",
+  },
+  calculator: {
+    index: "08",
+    title: "Your bill.",
+    accent: "Your solar potential.",
+    text: "Use your monthly electricity bill to estimate a suitable solar capacity, generation and potential savings.",
   },
 };
 
@@ -592,7 +600,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
               transition={{ delay: 0.58, duration: 0.8 }}
             >
               <MagneticLink href="/contact">Book a free site visit</MagneticLink>
-              <MagneticLink href="/process" variant="secondary">See how it works</MagneticLink>
+              <MagneticLink href="/solar-calculator" variant="secondary">Calculate solar needs</MagneticLink>
             </motion.div>
           </motion.div>
 
@@ -639,6 +647,8 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
             ))}
           </div>
         </section>
+
+        <SolarCalculator />
 
         <section className="home-proof section-pad">
           <div className="section-shell">
@@ -1044,6 +1054,8 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
           </div>
         </section>
         )}
+
+        {page === "calculator" && <SolarCalculator />}
       </main>
 
       <footer>
@@ -1072,6 +1084,7 @@ export default function EisherSite({ page = "home" }: { page?: SitePage }) {
               <Link href="/services">Commercial solar</Link>
               <Link href="/services">Industrial solar</Link>
               <Link href="/services">Maintenance</Link>
+              <Link href="/solar-calculator">Solar calculator</Link>
             </div>
             <div className="footer-line">
               <Leaf />

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/about", "/services", "/products", "/process", "/finance", "/why-us", "/contact"];
+  const routes = ["", "/about", "/services", "/products", "/process", "/finance", "/why-us", "/contact", "/solar-calculator"];
 
   return routes.map((route) => ({
     url: `https://eishersolar.com${route}`,

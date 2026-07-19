@@ -38,6 +38,11 @@ const pages: Record<string, { page: Exclude<SitePage, "home">; title: string; de
     title: "Contact Us",
     description: "Book a free solar site visit with Eisher Industries across Konkan and western Maharashtra.",
   },
+  "solar-calculator": {
+    page: "calculator",
+    title: "Solar Calculator",
+    description: "Estimate your suitable solar system capacity, annual generation and potential electricity bill savings.",
+  },
 };
 
 export function generateStaticParams() {
